@@ -1,0 +1,27 @@
+{
+  "name": "youtube_channel_scraper",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/yotube_chanel_scraper_json.js",
+  "scripts": {
+    "start": "tsc && node dist/yotube_chanel_scraper_json.js",
+    "dev": "tsx yotube_chanel_scraper_json.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "axios": "^1.8.4",
+    "dotenv": "^16.4.7",
+    "p-limit": "^6.2.0",
+    "xml2js": "^0.6.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.14",
+    "@types/xml2js": "^0.4.14",
+    "typescript": "^5.8.2",
+    "tsx": "^4.7.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

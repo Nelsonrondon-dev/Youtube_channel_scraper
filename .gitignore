@@ -1,0 +1,38 @@
+# Node.js dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+
+# Logs
+logs/
+*.log
+*.log.*
+
+# Compiled output
+dist/
+build/
+
+# Audio and transcription files
+audios/
+transcripciones/
+
+# Generated JSON files
+videos.json
+
+# System files
+.DS_Store
+Thumbs.db
+
+package-lock.json
+youtube_channel_scraper
+youtube_channel_scraper.ts
+
+# Exclude JavaScript files
+*.js
+videos_original.json 
+videos.csv
+videos.json
