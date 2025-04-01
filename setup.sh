@@ -1,34 +1,50 @@
 #!/bin/bash
 
-echo "🚀 Iniciando setup del entorno..."
+set -e  # Detener si algo falla
 
-# Actualizar sistema
-sudo apt update && sudo apt upgrade -y
+echo "🔄 Actualizando sistema..."
+sudo dnf update -y
 
-# Instalar Node.js (v18 LTS) y npm
-echo "📦 Instalando Node.js y npm..."
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-sudo apt install -y nodejs
+# Instalar Git
+echo "📁 Instalando Git..."
+sudo dnf install -y git
 
-# Instalar Python 3, pip y venv
-echo "🐍 Instalando Python, pip y venv..."
-sudo apt install -y python3 python3-pip python3-venv
+# Instalar Node.js y npm
+echo "🟢 Instalando Node.js y npm..."
+sudo dnf install -y nodejs
 
-# Instalar ffmpeg (necesario para whisper y yt-dlp)
-echo "🎞️ Instalando ffmpeg..."
-sudo apt install -y ffmpeg
+# Instalar TypeScript globalmente
+echo "📦 Instalando TypeScript..."
+sudo npm install -g typescript
 
-# Instalar yt-dlp
-echo "⬇️ Instalando yt-dlp..."
-sudo pip3 install -U yt-dlp
+# Instalar Python 3 y pip
+echo "🐍 Instalando Python y pip..."
+sudo dnf install -y python3 python3-pip
 
-# Instalar Whisper
-echo "🧠 Instalando Whisper..."
-sudo pip3 install -U openai-whisper
+# Instalar yt-dlp y Whisper con pip global
+echo "⬇️ Instalando yt-dlp y Whisper..."
+sudo pip3 install -U yt-dlp openai-whisper
 
-# Instalar dependencias del proyecto Node.js
-echo "📦 Instalando dependencias de Node..."
+# Instalar ffmpeg desde binario precompilado
+echo "🎞️ Instalando ffmpeg desde binario..."
+mkdir -p ~/bin
+cd ~/bin
+curl -L -o ffmpeg.tar.xz https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz
+tar -xvf ffmpeg.tar.xz
+cd ffmpeg-*-amd64-static
+sudo mv ffmpeg /usr/local/bin/
+sudo mv ffprobe /usr/local/bin/
+cd ~
+rm -rf ~/bin/ffmpeg*  # Limpiar archivos descargados
+
+# Volver a la carpeta del proyecto
+cd ~/Youtube_channel_scraper
+
+# Instalar dependencias de Node.js
+echo "📦 Instalando dependencias de Node.js..."
 npm install
 
-echo "✅ Setup completo. Puedes ejecutar tu script con:"
-echo "    npm run dev"
+echo ""
+echo "✅ Setup completo."
+echo "👉 Ejecuta tu script con:"
+echo "    node dist/yotube_chanel_scraper_json.js"
