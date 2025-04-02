@@ -5,27 +5,33 @@ set -e  # Detener si algo falla
 echo "🔄 Actualizando sistema..."
 sudo dnf update -y
 
-# Instalar Git
 echo "📁 Instalando Git..."
 sudo dnf install -y git
 
-# Instalar Node.js y npm
 echo "🟢 Instalando Node.js y npm..."
 sudo dnf install -y nodejs
 
-# Instalar TypeScript globalmente
+echo "🧬 Clonando repositorio del proyecto..."
+cd ~
+git clone -b develop https://github.com/Nelsonrondon-dev/Youtube_channel_scraper.git
+cd Youtube_channel_scraper
+
 echo "📦 Instalando TypeScript..."
 sudo npm install -g typescript
 
-# Instalar Python 3 y pip
-echo "🐍 Instalando Python y pip..."
-sudo dnf install -y python3 python3-pip
+echo "🐍 Instalando Python, pip y herramientas esenciales..."
+sudo dnf install -y python3 python3-pip python3-devel gcc gcc-c++ make cmake
 
-# Instalar yt-dlp y Whisper con pip global
-echo "⬇️ Instalando yt-dlp y Whisper..."
-sudo pip3 install -U yt-dlp openai-whisper
+echo "⬇️ Instalando PyTorch con soporte para CUDA..."
+pip3 install --upgrade pip
+pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 
-# Instalar ffmpeg desde binario precompilado
+echo "🧠 Instalando Whisper (con soporte CUDA)..."
+pip3 install openai-whisper --upgrade --no-cache-dir
+
+echo "⬇️ Instalando yt-dlp..."
+pip3 install -U yt-dlp
+
 echo "🎞️ Instalando ffmpeg desde binario..."
 mkdir -p ~/bin
 cd ~/bin
@@ -35,16 +41,14 @@ cd ffmpeg-*-amd64-static
 sudo mv ffmpeg /usr/local/bin/
 sudo mv ffprobe /usr/local/bin/
 cd ~
-rm -rf ~/bin/ffmpeg*  # Limpiar archivos descargados
+rm -rf ~/bin/ffmpeg*
 
-# Volver a la carpeta del proyecto
-cd ~/Youtube_channel_scraper
-
-# Instalar dependencias de Node.js
 echo "📦 Instalando dependencias de Node.js..."
+cd ~/Youtube_channel_scraper
 npm install
 
 echo ""
-echo "✅ Setup completo."
+echo "✅ Setup completo con GPU."
+echo "👉 Asegúrate de tener CUDA visible con: nvidia-smi"
 echo "👉 Ejecuta tu script con:"
-echo "    node dist/yotube_chanel_scraper_json.js"
+echo "    npm run dev"
