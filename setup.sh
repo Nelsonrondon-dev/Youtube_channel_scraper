@@ -13,7 +13,7 @@ sudo dnf install -y nodejs
 
 echo "🧬 Clonando repositorio del proyecto..."
 cd ~
-git clone -b develop https://github.com/Nelsonrondon-dev/Youtube_channel_scraper.git
+git clone -b feature/G4DN https://github.com/Nelsonrondon-dev/Youtube_channel_scraper.git
 cd Youtube_channel_scraper
 
 echo "📦 Instalando TypeScript..."
