@@ -48,6 +48,7 @@ function transcriptExists(videoId: string): boolean {
 
 function transcribeAudio(videoId: string, audioPath: string): string[] {
   const outputDir = path.join('transcripciones', videoId);
+  const rawTranscript = path.join(outputDir, `${videoId}.txt`);
   const transcriptPath = path.join(outputDir, 'transcription.txt');
 
   if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
@@ -56,6 +57,13 @@ function transcribeAudio(videoId: string, audioPath: string): string[] {
     const command = `whisper "${audioPath}" --language Spanish --model base --output_format txt --output_dir ${outputDir}`;
   // const command = `whisper "${audioPath}" --language Spanish --model medium --device cuda --output_format txt --output_dir ${outputDir}`;
   execSync(command, { stdio: 'inherit' });
+
+  if (!fs.existsSync(rawTranscript)) {
+    throw new Error(`❌ Whisper no generó el archivo esperado: ${rawTranscript}`);
+  }
+  
+  // Renombrar a transcription.txt
+  fs.renameSync(rawTranscript, transcriptPath);
 
   return fs.readFileSync(transcriptPath, 'utf-8').split('\n');
 }
