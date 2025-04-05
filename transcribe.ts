@@ -1,12 +1,19 @@
 import fs from 'fs';
 import path from 'path';
-import { execSync } from 'child_process';
+import { exec } from 'child_process';
+import { promisify } from 'util';
 import dotenv from 'dotenv';
 import axios from 'axios';
+import pLimit from 'p-limit';
 dotenv.config();
 
+const execAsync = promisify(exec);
 const API_KEY = process.env.YOUTUBE_API_KEY;
 const BASE_URL = 'https://www.googleapis.com/youtube/v3';
+
+// Límite de concurrencia: número de videos a procesar en paralelo
+const CONCURRENCY_LIMIT = parseInt(process.env.CONCURRENCY_LIMIT || '1', 10);
+const limit = pLimit(CONCURRENCY_LIMIT);
 
 async function fetchVideoMetadata(videoId: string): Promise<any> {
   const res = await axios.get(`${BASE_URL}/videos`, {
@@ -46,17 +53,17 @@ function transcriptExists(videoId: string): boolean {
   return fs.existsSync(transcriptPath);
 }
 
-function transcribeAudio(videoId: string, audioPath: string): string[] {
+async function transcribeAudio(videoId: string, audioPath: string): Promise<string[]> {
   const outputDir = path.join('transcripciones', videoId);
   const rawTranscript = path.join(outputDir, `${videoId}.txt`);
   const transcriptPath = path.join(outputDir, 'transcription.txt');
 
   if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
 
-  console.log(`🗣️ Transcribiendo ${videoId}`);
-    const command = `whisper "${audioPath}" --language Spanish --model base --output_format txt --output_dir ${outputDir}`;
+  console.log(`🗣️ Transcripción iniciada para ${videoId} a las ${new Date().toISOString()}`);
+  const command = `whisper "${audioPath}" --language Spanish --model base --output_format txt --output_dir ${outputDir}`;
   // const command = `whisper "${audioPath}" --language Spanish --model medium --device cuda --output_format txt --output_dir ${outputDir}`;
-  execSync(command, { stdio: 'inherit' });
+  await execAsync(command);
 
   if (!fs.existsSync(rawTranscript)) {
     throw new Error(`❌ Whisper no generó el archivo esperado: ${rawTranscript}`);
@@ -65,6 +72,7 @@ function transcribeAudio(videoId: string, audioPath: string): string[] {
   // Renombrar a transcription.txt
   fs.renameSync(rawTranscript, transcriptPath);
 
+  console.log(`🗣️ Transcripción terminada para ${videoId} a las ${new Date().toISOString()}`);
   return fs.readFileSync(transcriptPath, 'utf-8').split('\n');
 }
 
@@ -81,16 +89,19 @@ async function runTranscriptionOnly() {
     const audioDir = 'audios';
     const files = fs.readdirSync(audioDir).filter(file => file.endsWith('.mp3'));
 
-    for (const file of files) {
+    const transcriptionPromises = files.map(file => limit(async () => {
       const videoId = path.basename(file, '.mp3');
       if (!transcriptExists(videoId)) {
         const audioPath = path.join(audioDir, file);
-        const transcript = transcribeAudio(videoId, audioPath);
+        const transcript = await transcribeAudio(videoId, audioPath);
         await saveMetadata(videoId, transcript);
       } else {
         console.log(`⏭️ Transcripción ya existe para ${videoId}`);
       }
-    }
+    }));
+
+    await Promise.all(transcriptionPromises);
+
     console.log('✅ Transcripción completa. Archivos generados en la carpeta "transcripciones".');
   } catch (err) {
     console.error('❌ Error general en transcripción:', err);
