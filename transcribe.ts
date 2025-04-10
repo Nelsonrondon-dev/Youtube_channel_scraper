@@ -61,8 +61,8 @@ async function transcribeAudio(videoId: string, audioPath: string): Promise<stri
   if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
 
   console.log(`🗣️ Transcripción iniciada para ${videoId} a las ${new Date().toISOString()}`);
-  const command = `whisper "${audioPath}" --language Spanish --model base --output_format txt --output_dir ${outputDir}`;
-  // const command = `whisper "${audioPath}" --language Spanish --model medium --device cuda --output_format txt --output_dir ${outputDir}`;
+  // const command = `whisper "${audioPath}" --language Spanish --model base --output_format txt --output_dir ${outputDir}`;
+  const command = `whisper "${audioPath}" --language Spanish --model base --device cuda --output_format txt --output_dir ${outputDir}`;
   await execAsync(command);
 
   if (!fs.existsSync(rawTranscript)) {
