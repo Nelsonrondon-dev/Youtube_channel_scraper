@@ -5,6 +5,29 @@ set -e  # Detener si algo falla
 echo "🔄 Actualizando sistema..."
 sudo dnf update -y
 
+echo "🖥️ Instalando controladores NVIDIA y CUDA manualmente para Amazon Linux 2023..."
+
+echo "PREPARANDO EL SISTEMA..."
+
+dnf check-release-update
+sudo dnf update -y
+sudo dnf install -y dkms 
+sudo systemctl enable --now dkms
+if (uname -r | grep -q ^6.12.); then
+  sudo dnf install -y kernel-devel-$(uname -r)  kernel6.12-modules-extra
+else
+  sudo dnf install -y kernel-devel-$(uname -r)  kernel-modules-extra
+fi
+
+echo "🔄 Reiniciando el sistema para aplicar cambios..."
+sudo reboot
+
+echo "Instalando controladores NVIDIA y CUDA..."
+sudo dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/amzn2023/x86_64/cuda-amzn2023.repo
+sudo dnf install -y nvidia-driver
+sudo dnf install -y cuda-toolkit
+sudo reboot
+
 echo "📁 Instalando Git..."
 sudo dnf install -y git
 
@@ -13,7 +36,7 @@ sudo dnf install -y nodejs
 
 echo "🧬 Clonando repositorio del proyecto..."
 cd ~
-git clone -b develop https://github.com/Nelsonrondon-dev/Youtube_channel_scraper.git
+git clone -b feature/G4DN https://github.com/Nelsonrondon-dev/Youtube_channel_scraper.git
 cd Youtube_channel_scraper
 
 echo "📦 Instalando TypeScript..."
@@ -47,6 +70,9 @@ echo "📦 Instalando dependencias de Node.js..."
 cd ~/Youtube_channel_scraper
 npm install
 
+
+nvidia-smi
+echo "✅ nvidia-smi está funcionando correctamente."
 echo ""
 echo "✅ Setup completo con GPU."
 echo "👉 Asegúrate de tener CUDA visible con: nvidia-smi"

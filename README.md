@@ -41,10 +41,13 @@ Este proyecto es una herramienta para extraer datos de un canal de YouTube, incl
 4. Asegúrate de tener instalados `yt-dlp` y `whisper` en tu sistema.
 
 ## Uso
-
-Ejecuta el script principal con Node.js:
+Para descargar videos:
 ```bash
-node yotube_chanel_scraper_json.ts
+node download_videos.ts
+```
+Para transcribir videos:
+```bash
+node transcribe_videos.ts
 ```
 
 El script generará:
@@ -58,7 +61,7 @@ Puedes ajustar las siguientes variables en el archivo `.env`:
 - `YOUTUBE_API_KEY`: Tu clave de API de YouTube.
 - `CHANNEL_NAME`: El nombre del canal de YouTube a procesar.
 - `VIDEO_LIMIT`: Número máximo de videos a procesar (por defecto 10).
-- `CONCURRENCY`: Número de procesos concurrentes (por defecto 1).
+- `CONCURRENCY_LIMIT`: Número de procesos concurrentes (por defecto 1).
 
 ## Estructura del Proyecto
 
@@ -67,7 +70,7 @@ Youtube_channel_scraper/
 ├── audios/                # Carpeta para los archivos de audio descargados
 ├── transcripciones/       # Carpeta para las transcripciones generadas
 ├── videos.json            # Archivo JSON con los datos recopilados
-├── yotube_chanel_scraper_json.ts # Script principal
+├── youtube_channel_scraper_json.ts # Script principal
 ├── .env                   # Variables de entorno
 ├── .gitignore             # Archivos y carpetas ignorados por Git
 └── README.md              # Documentación del proyecto

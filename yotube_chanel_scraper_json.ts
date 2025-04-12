@@ -107,7 +107,8 @@ function transcribeAudio(videoId: string, audioPath: string): string[] {
   const transcriptPath = path.join('transcripciones', `${videoId}.txt`);
   if (!fs.existsSync('transcripciones')) fs.mkdirSync('transcripciones');
   console.log(`🗣️ Transcribiendo ${videoId}`);
-  const command = `whisper "${audioPath}" --language Spanish --model medium --device cuda --output_format txt --output_dir transcripciones`;
+  // const command = `whisper "${audioPath}" --language Spanish --model medium --device cuda --output_format txt --output_dir transcripciones`;
+  const command = `whisper "${audioPath}" --language Spanish --model base --output_format txt --output_dir transcripciones`;
   execSync(command, { stdio: 'inherit' });
   return fs.readFileSync(transcriptPath, 'utf-8').split('\n');
 }
